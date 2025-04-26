@@ -1,0 +1,43 @@
+{
+    "jobs": [
+      {
+        "id": 1,
+        "title": "Senior React Developer",
+        "company": "ABC Corp",
+        "location": "New York, NY (Remote)",
+        "description": "We are looking for an experienced React developer to join our team...",
+        "requirements": ["5+ years experience with React", "Experience with TypeScript", "Knowledge of Redux"],
+        "salary": "$120,000 - $150,000",
+        "postedDate": "2025-04-10T12:00:00Z",
+        "status": "active",
+        "applications": 12,
+        "createdBy": 1
+      },
+      {
+        "id": 2,
+        "title": "UI/UX Designer",
+        "company": "XYZ Ltd",
+        "location": "San Francisco, CA (Hybrid)",
+        "description": "We're hiring a talented UI/UX designer to create beautiful interfaces...",
+        "requirements": ["3+ years in UI/UX design", "Proficient in Figma", "Portfolio of previous work"],
+        "salary": "$90,000 - $120,000",
+        "postedDate": "2025-04-15T15:30:00Z",
+        "status": "active",
+        "applications": 8,
+        "createdBy": 2
+      },
+      {
+        "id": 3,
+        "title": "Backend Engineer",
+        "company": "ABC Corp",
+        "location": "Chicago, IL (On-site)",
+        "description": "Looking for a backend engineer specialized in Node.js...",
+        "requirements": ["4+ years with Node.js", "Experience with MongoDB", "Knowledge of microservices"],
+        "salary": "$110,000 - $140,000",
+        "postedDate": "2025-04-18T09:15:00Z",
+        "status": "active",
+        "applications": 5,
+        "createdBy": 1
+      }
+    ]
+  }

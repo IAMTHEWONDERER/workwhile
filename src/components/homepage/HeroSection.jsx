@@ -1,5 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
+import workwhileLogo from '../../assets/imgs/workwhile.png'; // ✅ Import the logo here
 
 const partnerLogos = [
   { name: "Google", color: "#4285F4" },
@@ -16,8 +17,7 @@ const partnerLogos = [
 
 const HeroSection = forwardRef((props, ref) => {
   const [rotation, setRotation] = useState(0);
-  
-  // Simulate rotating partners banner
+
   useEffect(() => {
     const interval = setInterval(() => {
       setRotation(prev => (prev + 0.2) % 360);
@@ -29,7 +29,7 @@ const HeroSection = forwardRef((props, ref) => {
   return (
     <section 
       ref={ref}
-      className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
+      className="min-h-screen flex flex-col bg-white items-center justify-center px-4 relative overflow-hidden"
     >
       {/* Background animation */}
       <div className="absolute inset-0 overflow-hidden">
@@ -42,10 +42,8 @@ const HeroSection = forwardRef((props, ref) => {
         <div className="absolute inset-0 rounded-full opacity-10 blur-3xl transform scale-150" style={{ backgroundColor: '#3c78e6' }}></div>
         <div className="absolute inset-0 rounded-full opacity-10 blur-3xl transform scale-125 translate-x-6" style={{ backgroundColor: '#EDC418' }}></div>
         
-        <div className="relative bg-white rounded-full p-6 shadow-lg">
-          <div className="text-4xl sm:text-5xl md:text-6xl font-bold" style={{ color: '#3c78e6' }}>
-            Work<span style={{ color: '#EDC418' }}>While</span>
-          </div>
+        <div className="relative  p-6  flex items-center justify-center">
+          <img src={workwhileLogo} alt="Workwhile Logo" className="h-24 sm:h-28 md:h-32 object-contain" />
         </div>
       </div>
       

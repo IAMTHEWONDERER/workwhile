@@ -1,0 +1,24 @@
+{
+    "users": [
+      {
+        "id": 1,
+        "username": "johndoe",
+        "email": "john@example.com",
+        "password": "password123",
+        "name": "John Doe",
+        "company": "ABC Corp",
+        "role": "recruiter",
+        "savedJobs": [3, 5, 8]
+      },
+      {
+        "id": 2,
+        "username": "janedoe",
+        "email": "jane@example.com",
+        "password": "pass456",
+        "name": "Jane Doe",
+        "company": "XYZ Ltd",
+        "role": "recruiter",
+        "savedJobs": [1, 4]
+      }
+    ]
+  }

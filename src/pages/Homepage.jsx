@@ -49,7 +49,6 @@ export default function WorkWhileHomepage() {
 
   return (
     <div className="relative overflow-hidden">
-      <Navbar />
       <div className="min-h-screen">
         <HeroSection ref={sectionRefs.hero} />
         <FeaturesSection ref={sectionRefs.features} isVisible={isVisible.features} />
@@ -57,7 +56,6 @@ export default function WorkWhileHomepage() {
         <CareerPathwaysSection ref={sectionRefs.pathways} isVisible={isVisible.pathways} />
         <TestimonialsSection ref={sectionRefs.testimonials} isVisible={isVisible.testimonials} />
         <CTASection ref={sectionRefs.cta} isVisible={isVisible.cta} />
-        <Footer />
       </div>
     </div>
   );
