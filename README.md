@@ -1,12 +1,43 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## WorkWhile - Find Your Perfect Job
 
-Currently, two official plugins are available:
+<p align="center">
+    <img src="public/workwhile.png" alt="WorkWhile Logo" width="250"/>
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### About WorkWhile
 
-## Expanding the ESLint configuration
+WorkWhile is an innovative job seeking platform designed to connect talented professionals with their ideal employment opportunities. Our streamlined interface and powerful matching algorithms ensure that job seekers find positions that align with their skills, values, and career goals.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Key Features
+
+- 🔍 **Smart Search** - Find relevant job opportunities based on your skills and preferences
+- 💼 **Profile Builder** - Create a compelling professional profile to attract employers
+- 📊 **Application Tracking** - Monitor your application status in real-time
+- 📱 **Mobile Responsive** - Access WorkWhile on any device, anywhere
+- 🔔 **Instant Notifications** - Stay updated on new opportunities and application progress
+
+### Getting Started
+
+1. Clone this repository
+2. Install dependencies with `npm install`
+3. Start the development server with `npm run dev`
+4. Visit `http://localhost:5173` in your browser
+
+### Technology Stack
+
+- React.js
+- Vite
+- [Other technologies used in your project]
+
+### Contributing
+
+We welcome contributions to WorkWhile! Please see our contributing guidelines for more information.
+
+<p align="center">
+    <img src="public/wwlogo.png" alt="WorkWhile Icon" width="50"/>
+</p>
+
+### License
+
+This project is licensed under the [MIT License](LICENSE).
