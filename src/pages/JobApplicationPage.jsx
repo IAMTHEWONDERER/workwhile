@@ -238,13 +238,13 @@ const JobApplicationPage = () => {
           <div className="flex justify-center gap-4">
             <button
               onClick={() => navigate('/jobs')}
-              className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-md hover:bg-gray-200"
+              className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-full hover:bg-gray-200"
             >
               Browse More Jobs
             </button>
             <button
               onClick={handleBackToJob}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700"
+              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700"
             >
               Back to Job Details
             </button>
@@ -338,7 +338,7 @@ const JobApplicationPage = () => {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border ${errors.fullName ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+                className={`mt-1 block w-full rounded-full border ${errors.fullName ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
               />
               {errors.fullName && (
                 <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
@@ -355,7 +355,7 @@ const JobApplicationPage = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border ${errors.email ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+                className={`mt-1 block w-full rounded-full border ${errors.email ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -372,7 +372,7 @@ const JobApplicationPage = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border ${errors.phone ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+                className={`mt-1 block w-full rounded-full border ${errors.phone ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
               />
               {errors.phone && (
                 <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
@@ -390,7 +390,7 @@ const JobApplicationPage = () => {
                 placeholder="e.g., Immediately, 2 weeks notice, etc."
                 value={formData.availability}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border ${errors.availability ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
+                className={`mt-1 block w-full rounded-full border ${errors.availability ? 'border-red-300' : 'border-gray-300'} px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500`}
               />
               {errors.availability && (
                 <p className="mt-1 text-sm text-red-600">{errors.availability}</p>
@@ -409,7 +409,7 @@ const JobApplicationPage = () => {
               placeholder="e.g., $50,000 - $60,000"
               value={formData.salaryExpectation}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="mt-1 block w-full rounded-full border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
             />
           </div>
           
@@ -543,7 +543,7 @@ const JobApplicationPage = () => {
             <button
               type="submit"
               disabled={submitting}
-              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
                 submitting ? 'opacity-70 cursor-not-allowed' : ''
               }`}
             >

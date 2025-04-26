@@ -1,18 +1,24 @@
 import { useState, useEffect, forwardRef } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
-import workwhileLogo from '../../assets/imgs/workwhile.png'; // ✅ Import the logo here
+import workwhileLogo from '../../assets/imgs/workwhile.png';
 
+// Company logo URLs
 const partnerLogos = [
-  { name: "Google", color: "#4285F4" },
-  { name: "Microsoft", color: "#00A4EF" },
-  { name: "Amazon", color: "#FF9900" },
-  { name: "Apple", color: "#A2AAAD" },
-  { name: "Meta", color: "#0080FB" },
-  { name: "Netflix", color: "#E50914" },
-  { name: "Uber", color: "#000000" },
-  { name: "Airbnb", color: "#FF5A5F" },
-  { name: "Spotify", color: "#1DB954" },
-  { name: "Tesla", color: "#CC0000" },
+  { name: "Google", logo: "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" },
+  { name: "Microsoft", logo: "https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31" },
+  { name: "Amazon", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/2560px-Amazon_logo.svg.png" },
+  { 
+    name: "Apple", 
+    logo: "https://www.apple.com/ac/globalnav/7/en_US/images/be15095f-5a20-57d0-ad14-cf4c638e223a/globalnav_apple_image__b5er5ngrzxqq_large.svg",
+    darkBackground: true,
+    scale: 3 // Apple logo will be 3x its normal size
+  },
+  { name: "Meta", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/800px-Meta_Platforms_Inc._logo.svg.png" },
+  { name: "Netflix", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png" },
+  { name: "Uber", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/2560px-Uber_logo_2018.svg.png" },
+  { name: "LinkedIn", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/LinkedIn_Logo.svg/2560px-LinkedIn_Logo.svg.png" }, // Replaced Airbnb
+  { name: "Spotify", logo: "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" },
+  { name: "Tesla", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Tesla_logo.png/800px-Tesla_logo.png" },
 ];
 
 const HeroSection = forwardRef((props, ref) => {
@@ -42,7 +48,7 @@ const HeroSection = forwardRef((props, ref) => {
         <div className="absolute inset-0 rounded-full opacity-10 blur-3xl transform scale-150" style={{ backgroundColor: '#3c78e6' }}></div>
         <div className="absolute inset-0 rounded-full opacity-10 blur-3xl transform scale-125 translate-x-6" style={{ backgroundColor: '#EDC418' }}></div>
         
-        <div className="relative  p-6  flex items-center justify-center">
+        <div className="relative p-6 flex items-center justify-center">
           <img src={workwhileLogo} alt="Workwhile Logo" className="h-24 sm:h-28 md:h-32 object-contain" />
         </div>
       </div>
@@ -55,10 +61,16 @@ const HeroSection = forwardRef((props, ref) => {
         >
           <div className="inline-flex space-x-8 px-8">
             {[...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, index) => (
-              <div key={index} className="flex items-center justify-center h-12 w-24 bg-white rounded-xl shadow-md">
-                <span style={{ color: partner.color }} className="font-bold text-lg">
-                  {partner.name}
-                </span>
+              <div 
+                key={index} 
+                className={`flex items-center justify-center h-12 w-32 rounded-xl shadow-md p-2 ${partner.darkBackground ? 'bg-black' : 'bg-white'}`}
+              >
+                <img 
+                  src={partner.logo} 
+                  alt={`${partner.name} logo`}
+                  className="max-h-full max-w-full object-contain"
+                  style={partner.scale ? { transform: `scale(${partner.scale})` } : {}}
+                />
               </div>
             ))}
           </div>

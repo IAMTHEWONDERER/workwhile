@@ -211,7 +211,7 @@ const JobDetailsPage = () => {
                 hasApplied 
                   ? 'bg-gray-300 cursor-not-allowed' 
                   : 'bg-blue-600 hover:bg-blue-700'
-              } text-white font-medium rounded-md flex-1 sm:flex-none sm:min-w-40 text-center`}
+              } text-white font-medium rounded-full flex-1 sm:flex-none sm:min-w-40 text-center`}
             >
               {hasApplied ? 'Already Applied' : 'Apply Now'}
             </button>
@@ -221,7 +221,7 @@ const JobDetailsPage = () => {
                 isSaved 
                   ? 'border border-blue-600 text-blue-700 bg-blue-50' 
                   : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-              } font-medium rounded-md flex-1 sm:flex-none sm:min-w-40 text-center`}
+              } font-medium rounded-full flex-1 sm:flex-none sm:min-w-40 text-center`}
             >
               {isSaved ? 'Saved' : 'Save Job'}
             </button>
