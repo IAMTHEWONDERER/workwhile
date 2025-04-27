@@ -6,25 +6,25 @@ const careerPathways = [
     title: "Technology",
     icon: <Code size={24} />,
     description: "Discover opportunities in software development, cybersecurity, and AI.",
-    image: "https://placehold.co/600x400"
+    image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
   },
   {
     title: "Business",
     icon: <BriefcaseBusiness size={24} />,
     description: "Explore careers in management, entrepreneurship, and consulting.",
-    image: "https://placehold.co/600x400"
+    image: "https://images.unsplash.com/photo-1591696331111-ef9586a5b17a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
   },
   {
     title: "Finance",
     icon: <LineChart size={24} />,
     description: "Build expertise in banking, investments, and financial analysis.",
-    image: "https://placehold.co/600x400"
+    image: "https://images.unsplash.com/photo-1620714223084-8fcacc6dfd8d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
   },
   {
     title: "Education",
     icon: <BookOpen size={24} />,
     description: "Shape the future through teaching and educational innovation.",
-    image: "https://placehold.co/600x400"
+    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80"
   }
 ];
 
@@ -65,4 +65,5 @@ const CareerPathwaysSection = forwardRef(({ isVisible }, ref) => {
     </section>
   );
 });
+
 export default CareerPathwaysSection;
