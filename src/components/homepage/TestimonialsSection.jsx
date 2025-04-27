@@ -6,21 +6,24 @@ const testimonials = [
     role: "Software Engineer",
     company: "TechCorp",
     text: "WorkWhile's mentorship program connected me with a senior engineer who helped me land my dream job right out of college.",
-    image: "https://placehold.co/200x200"
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    background: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
   },
   {
     name: "Sarah Chen",
     role: "Marketing Associate",
     company: "Brand Global",
     text: "The skills assessments and personalized recommendations were spot-on. I discovered career paths I hadn't even considered before.",
-    image: "https://placehold.co/200x200"
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    background: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
   },
   {
     name: "Marcus Taylor",
     role: "Financial Analyst",
     company: "Investment Partners",
     text: "From internship to full-time offer, WorkWhile guided me through every step with resources and support I couldn't find anywhere else.",
-    image: "https://placehold.co/200x200"
+    image: "https://randomuser.me/api/portraits/men/57.jpg",
+    background: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
   }
 ];
 
@@ -43,7 +46,7 @@ const TestimonialsSection = forwardRef(({ isVisible }, ref) => {
               key={index} 
               className={`bg-white rounded-xl shadow-md p-4 border border-gray-100 transform transition-all duration-1000 delay-${index * 200} ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
             >
-              <img src="https://placehold.co/600x400" alt="Testimonial background" className="w-full h-32 object-cover mb-4 rounded-lg" />
+              <img src={testimonial.background} alt="Testimonial background" className="w-full h-32 object-cover mb-4 rounded-lg" />
               <div className="flex items-center mb-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                   <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
@@ -61,4 +64,5 @@ const TestimonialsSection = forwardRef(({ isVisible }, ref) => {
     </section>
   );
 });
+
 export default TestimonialsSection;
