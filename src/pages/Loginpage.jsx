@@ -64,8 +64,8 @@ const LoginPage = () => {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-[3px] sm:px-10">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md border border-black rounded-[7px]">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-[7px] sm:px-10">
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
@@ -129,26 +129,7 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {!isLogin && (
-              <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                  I am a:
-                </label>
-                <div className="mt-1">
-                  <select
-                    id="role"
-                    name="role"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  >
-                    <option value="jobseeker">Job Seeker</option>
-                    <option value="employer">Employer</option>
-                  </select>
-                </div>
-              </div>
-            )}
-
+         
             <div>
               <button
                 type="submit"
@@ -171,46 +152,6 @@ const LoginPage = () => {
               </button>
             </div>
           </form>
-
-          {isLogin && (
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                </div>
-              </div>
-
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <div>
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Sign in with Google</span>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12.545 12.151c0 1.054-.855 1.909-1.909 1.909h-7.636c-1.054 0-1.909-.855-1.909-1.909v-7.636c0-1.054.855-1.909 1.909-1.909h7.636c1.054 0 1.909.855 1.909 1.909v7.636z" />
-                      <path d="M12.545 10.242c0 3.866 1.618 5.752 5.346 5.752h3.982v-2.704h-3.982c-2.071 0-2.5-1.113-2.5-3.048v-2.818h6.143v-2.704h-6.143v-4.228h-2.846v4.228h-3.982v2.704h3.982v2.818z" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div>
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Sign in with LinkedIn</span>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.338 16.338h-2.839V11.59c0-1.184-.553-1.994-1.584-1.994-1.032 0-1.585.81-1.585 1.994v4.748H7.491v-9.03h2.839v1.333c.482-.686 1.298-1.231 2.368-1.231 2.558 0 3.64 1.619 3.64 4.155v4.773zM3.65 6.254a1.77 1.77 0 110-3.539 1.77 1.77 0 110 3.539zm1.416 10.084H2.234v-9.03h2.832v9.03z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

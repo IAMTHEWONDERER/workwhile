@@ -216,13 +216,7 @@ export default function Navbar() {
                   Notifications
                 </Link>
               )}
-              <Link 
-                to={isAuthenticated ? '/create-job' : '/login'} 
-                className="block px-3 py-2 rounded-md text-blue-600 font-medium hover:bg-blue-50"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Create a job offer
-              </Link>
+             
               {isAuthenticated && (
                 <>
                   {user?.role === 'employer' && (
@@ -252,6 +246,13 @@ export default function Navbar() {
                   </button>
                 </>
               )}
+               <Link 
+                to={isAuthenticated ? '/create-job' : '/login'} 
+                className="block px-3 py-2 rounded-md text-blue-600 font-medium hover:bg-blue-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Create a job offer
+              </Link>
             </div>
           </div>
         )}
