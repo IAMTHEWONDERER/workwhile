@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate, useLocation } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "../utils/store";
 import { checkAuthState } from "../utils/slices/authSlice";
@@ -10,6 +10,17 @@ import JobListingsPage from "../pages/JobListingsPage";
 import JobDetailsPage from "../pages/JobDetailsPage";
 import JobApplicationPage from "../pages/JobApplicationPage";
 import Layout from "../components/common/Layout";
+
+// ScrollToTop component to reset scroll position on page navigation
+const ScrollToTop = ({ children }) => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  
+  return children;
+};
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -37,7 +48,11 @@ const AppContent = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Layout />,
+      element: (
+        <ScrollToTop>
+          <Layout />
+        </ScrollToTop>
+      ),
       children: [
         {
           index: true,
