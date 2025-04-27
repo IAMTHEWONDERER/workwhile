@@ -11,6 +11,7 @@ import JobDetailsPage from "../pages/JobDetailsPage";
 import JobApplicationPage from "../pages/JobApplicationPage";
 import Layout from "../components/common/Layout";
 import CompanyReviewPage from "../pages/CompanyReviewPage";
+import SalaryGuidePage from "../pages/SalaryGuidePage";
 // ScrollToTop component to reset scroll position on page navigation
 const ScrollToTop = ({ children }) => {
   const location = useLocation();
@@ -72,7 +73,11 @@ const AppContent = () => {
         },{
         path :"companies",
         element: <CompanyReviewPage/>,
+        },{
+        path :"salaries",
+        element: <SalaryGuidePage/>,
         },
+
         {
           path: "job/:id/apply",
           element: (
