@@ -1,28 +1,26 @@
 // src/redux/slices/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Async thunk for login
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      // In a real app, this would be an API call
-      // For demo purposes, we're just simulating a successful login
-      
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Mock user data
+      // Simulate checking user role
       const userData = {
-        id: '123',
+        id: credentials.id || Math.random().toString(36).substr(2, 9),
         email: credentials.email,
-        name: 'Demo User',
+        name: credentials.name || credentials.username || 'Demo User',
         role: credentials.role || 'jobseeker',
       };
       
-      // Save to localStorage
-      localStorage.setItem('currentUser', JSON.stringify(userData));
+      // Check if user is a jobseeker
+      if (userData.role !== 'jobseeker') {
+        return rejectWithValue('Access denied. Only jobseekers can login.');
+      }
       
+      localStorage.setItem('currentUser', JSON.stringify(userData));
       return userData;
     } catch (error) {
       return rejectWithValue(error.message || 'Login failed');
@@ -30,28 +28,25 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Async thunk for registration
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      // In a real app, this would be an API call
-      // For demo purposes, we're just simulating a successful registration
-      
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Mock new user
+      // Check if user is registering as a jobseeker
+      if (userData.role !== 'jobseeker') {
+        return rejectWithValue('Registration failed. Only jobseekers can register.');
+      }
+      
       const newUser = {
         id: Math.random().toString(36).substr(2, 9),
         email: userData.email,
         name: userData.name || 'New User',
-        role: userData.role || 'jobseeker',
+        role: 'jobseeker', // Force role to be jobseeker
       };
       
-      // Save to localStorage
       localStorage.setItem('currentUser', JSON.stringify(newUser));
-      
       return newUser;
     } catch (error) {
       return rejectWithValue(error.message || 'Registration failed');
@@ -59,7 +54,6 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// Async thunk for logout
 export const logoutUser = createAsyncThunk(
   'auth/logout',
   async () => {
@@ -68,13 +62,20 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
-// Async thunk to check if user is already logged in
 export const checkAuthState = createAsyncThunk(
   'auth/checkState',
-  async () => {
+  async (_, { rejectWithValue }) => {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      return JSON.parse(savedUser);
+      const user = JSON.parse(savedUser);
+      
+      // Check if the saved user is a jobseeker
+      if (user.role !== 'jobseeker') {
+        localStorage.removeItem('currentUser');
+        return rejectWithValue('Access denied. Only jobseekers can use this application.');
+      }
+      
+      return user;
     }
     return null;
   }
@@ -141,6 +142,12 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = !!action.payload;
+      })
+      .addCase(checkAuthState.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.user = null;
+        state.isAuthenticated = false;
       });
   },
 });
