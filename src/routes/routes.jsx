@@ -78,6 +78,7 @@ const AppContent = () => {
         element: <SalaryGuidePage/>,
         },
 
+
         {
           path: "job/:id/apply",
           element: (
