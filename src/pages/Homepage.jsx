@@ -1,13 +1,10 @@
-// src/pages/WorkWhileHomepage.jsx
 import { useState, useEffect, useRef } from 'react';
-import Navbar from '../components/common/Navbar';
 import HeroSection from '../components/homepage/HeroSection';
 import FeaturesSection from '../components/homepage/FeaturesSection';
 import StatisticsSection from '../components/homepage/StatisticsSection';
 import CareerPathwaysSection from '../components/homepage/CareerPathwaysSection';
 import TestimonialsSection from '../components/homepage/TestimonialsSection';
 import CTASection from '../components/homepage/CTASection.jsx';
-import Footer from '../components/common/Footer';
 
 export default function WorkWhileHomepage() {
   const [isVisible, setIsVisible] = useState({});

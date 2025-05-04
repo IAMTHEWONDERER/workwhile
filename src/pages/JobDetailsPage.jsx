@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import jobsData from '../data/jobs.json';
 
-const JobDetailsPage = () => {
+const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasApplied, setHasApplied] = useState(false);
@@ -33,8 +33,8 @@ const JobDetailsPage = () => {
       
       // Check if job is saved
       const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-      const saved = savedJobs.some(savedJobId => 
-        savedJobId === parseInt(id) && user.id === savedJobs.userId
+      const saved = savedJobs.some(savedJob => 
+        savedJob.jobId === parseInt(id) && savedJob.userId === user.id
       );
       setIsSaved(saved);
     }
@@ -42,7 +42,14 @@ const JobDetailsPage = () => {
 
   const handleApply = () => {
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: `/job/${id}` } });
+      // Save the exact application path the user wanted to access
+      navigate('/login', { state: { from: `/job/${id}/apply` } });
+      return;
+    }
+    
+    // Check if user has completed profile setup
+    if (user?.needsProfileSetup) {
+      navigate('/profile-setup');
       return;
     }
     
@@ -55,6 +62,7 @@ const JobDetailsPage = () => {
 
   const handleSaveJob = () => {
     if (!isAuthenticated) {
+      // Save current job page as the return destination
       navigate('/login', { state: { from: `/job/${id}` } });
       return;
     }
@@ -83,6 +91,29 @@ const JobDetailsPage = () => {
   const handleBackToJobs = () => {
     navigate('/jobs');
   };
+
+  // Handle the case when we're in editing mode (protected route)
+  if (isEditing) {
+    // Add your editing UI here
+    return (
+      <div className="max-w-4xl mx-auto px-4 mt-24 mb-16">
+        <h1 className="text-2xl font-bold mb-4">Edit Job Listing</h1>
+        {/* Job editing form would go here */}
+        <p className="text-gray-600">Job editing functionality to be implemented</p>
+      </div>
+    );
+  }
+
+  // Handle the case when we're showing applications (protected route)
+  if (showApplications) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 mt-24 mb-16">
+        <h1 className="text-2xl font-bold mb-4">Applications for this Job</h1>
+        {/* Applications list would go here */}
+        <p className="text-gray-600">Applications list to be implemented</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
