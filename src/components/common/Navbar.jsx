@@ -93,15 +93,8 @@ export default function Navbar() {
                 </Link>
               )}
               
-              {/* Create job offer button */}
-              <Link 
-                to={isAuthenticated ? '/create-job' : '/login'}
-                className="hidden sm:block text-sm text-blue-600 font-medium hover:text-blue-800"
-              >
-                Create a job offer
-              </Link>
+            
               
-              {/* User icon/profile dropdown */}
               <div className="relative" ref={dropdownRef}>
                 {isAuthenticated ? (
                   <>
@@ -158,7 +151,12 @@ export default function Navbar() {
                   </Link>
                 )}
               </div>
-              
+              <Link 
+                to='/'
+                className="hidden sm:block text-sm text-blue-600 font-medium hover:text-blue-800"
+              >
+                Create a job offer
+              </Link>
               {/* Mobile menu button */}
               <button
                 className="md:hidden flex items-center justify-center"

@@ -1,4 +1,3 @@
-// src/redux/slices/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const loginUser = createAsyncThunk(
@@ -43,7 +42,9 @@ export const registerUser = createAsyncThunk(
         id: Math.random().toString(36).substr(2, 9),
         email: userData.email,
         name: userData.name || 'New User',
+        username: userData.username,
         role: 'jobseeker', // Force role to be jobseeker
+        needsProfileSetup: true, // Flag to indicate profile setup is needed
       };
       
       localStorage.setItem('currentUser', JSON.stringify(newUser));
@@ -78,6 +79,38 @@ export const checkAuthState = createAsyncThunk(
       return user;
     }
     return null;
+  }
+);
+
+export const completeProfileSetup = createAsyncThunk(
+  'auth/completeProfileSetup',
+  async (profileData, { getState, rejectWithValue }) => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      
+      const { user } = getState().auth;
+      if (!user) {
+        return rejectWithValue('User not authenticated');
+      }
+      
+      // Update the user profile with the new data
+      const updatedUser = {
+        ...user,
+        needsProfileSetup: false, // Mark profile setup as completed
+        profileCompleted: true,
+        experienceLevel: profileData.experienceLevel,
+        skills: profileData.skills,
+        jobTitles: profileData.jobTitles,
+        preferences: profileData.preferences
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      
+      return updatedUser;
+    } catch (error) {
+      return rejectWithValue(error.message || 'Profile setup failed');
+    }
   }
 );
 
@@ -148,6 +181,20 @@ const authSlice = createSlice({
         state.error = action.payload;
         state.user = null;
         state.isAuthenticated = false;
+      })
+      
+      // Complete profile setup cases
+      .addCase(completeProfileSetup.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(completeProfileSetup.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(completeProfileSetup.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

@@ -4,6 +4,7 @@ import { Search, DollarSign, Lightbulb, BookOpen, MessageCircle, ChevronDown, Aw
 const SalaryGuidePage = forwardRef((props, ref) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCalculator, setShowCalculator] = useState(false);
   
   const categories = ['All', 'Salary Negotiation', 'Interview Tips', 'Career Growth', 'Benefits'];
   
@@ -13,42 +14,42 @@ const SalaryGuidePage = forwardRef((props, ref) => {
       description: "Master the art of negotiating your worth with confidence and strategy.",
       category: "Salary Negotiation",
       icon: <DollarSign size={24} style={{ color: '#3c78e6' }} />,
-      image: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      image: "/api/placeholder/400/320"
     },
     {
       title: "Interview Question Preparation",
       description: "Practice answers to common interview questions and impress hiring managers.",
       category: "Interview Tips",
       icon: <MessageCircle size={24} style={{ color: '#3c78e6' }} />,
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      image: "/api/placeholder/400/320"
     },
     {
       title: "Benefits Package Analysis",
       description: "Learn how to evaluate the full compensation package beyond just the salary.",
       category: "Benefits",
       icon: <Award size={24} style={{ color: '#3c78e6' }} />,
-      image: "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      image: "/api/placeholder/400/320"
     },
     {
       title: "Salary Research Strategies",
       description: "Discover how to research market rates and position yourself optimally.",
       category: "Salary Negotiation",
       icon: <BookOpen size={24} style={{ color: '#3c78e6' }} />,
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      image: "/api/placeholder/400/320"
     },
     {
       title: "Career Advancement Tactics",
       description: "Strategic approaches to climb the ladder and increase your earning potential.",
       category: "Career Growth",
       icon: <Briefcase size={24} style={{ color: '#3c78e6' }} />,
-      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      image: "/api/placeholder/400/320"
     },
     {
       title: "Interview Body Language",
       description: "Non-verbal communication tips that will help you make a strong impression.",
       category: "Interview Tips",
       icon: <Lightbulb size={24} style={{ color: '#3c78e6' }} />,
-      image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
+      image: "/api/placeholder/400/320"
     }
   ];
 
@@ -80,6 +81,40 @@ const SalaryGuidePage = forwardRef((props, ref) => {
       icon: <Clock size={22} style={{ color: '#EDC418' }} />
     }
   ];
+
+  // Calculator state
+  const [experience, setExperience] = useState(2);
+  const [industry, setIndustry] = useState('Technology');
+  const [calculatedSalary, setCalculatedSalary] = useState({
+    min: 6000,
+    max: 50000
+  });
+
+  const calculateSalary = () => {
+    // Simple mock calculation logic
+    let baseMin = 5000;
+    let baseMax = 10000;
+    
+    // Adjust by experience
+    baseMin += experience * 3000;
+    baseMax += experience * 5000;
+    
+    // Industry adjustments
+    const industryMultipliers = {
+      'Technology': 1.2,
+      'Finance': 1.3,
+      'Healthcare': 1.1,
+      'Education': 0.9,
+      'Manufacturing': 1.0
+    };
+    
+    const multiplier = industryMultipliers[industry] || 1;
+    
+    setCalculatedSalary({
+      min: Math.round(baseMin * multiplier),
+      max: Math.round(baseMax * multiplier)
+    });
+  };
 
   return (
     <div ref={ref} className="min-h-screen bg-gray-50 py-12 px-4">
@@ -225,15 +260,16 @@ const SalaryGuidePage = forwardRef((props, ref) => {
               <button 
                 className="px-6 py-3 rounded-full text-white font-medium transition hover:bg-opacity-90"
                 style={{ backgroundColor: '#3c78e6' }}
+                onClick={() => setShowCalculator(!showCalculator)}
               >
-                Try Salary Calculator
+                {showCalculator ? 'Hide Calculator' : 'Try Salary Calculator'}
               </button>
             </div>
             <div className="md:w-2/5">
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-gray-600 font-medium">Average Salary Range</span>
-                  <span className="text-xl font-bold" style={{ color: '#3c78e6' }}>$65,000 - $85,000</span>
+                  <span className="text-xl font-bold" style={{ color: '#3c78e6' }}>60,000 MAD - 130,000 MAD / Year</span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full mb-3">
                   <div className="h-full rounded-full" style={{ width: '70%', backgroundColor: '#EDC418' }}></div>
@@ -246,13 +282,71 @@ const SalaryGuidePage = forwardRef((props, ref) => {
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Scroll indicator */}
-      <div className="flex justify-center mt-16">
-        <div className="animate-bounce">
-          <ChevronDown size={32} style={{ color: '#3c78e6' }} />
-        </div>
+
+        {/* Salary Calculator Modal */}
+        {showCalculator && (
+          <div className="mt-6 bg-white rounded-xl shadow-lg p-6 md:p-8 border-t-4" style={{ borderColor: '#3c78e6' }}>
+            <h3 className="text-xl font-semibold mb-6" style={{ color: '#3c78e6' }}>Salary Calculator</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <label className="block text-gray-700 mb-2 font-medium">Years of Experience</label>
+                <select 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-blue-300"
+                  value={experience}
+                  onChange={(e) => setExperience(Number(e.target.value))}
+                >
+                  <option value="0">0-1 year</option>
+                  <option value="1">1-2 years</option>
+                  <option value="2">2-5 years</option>
+                  <option value="5">5-8 years</option>
+                  <option value="8">8+ years</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 mb-2 font-medium">Industry</label>
+                <select 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-blue-300"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                >
+                  <option value="Technology">Technology</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Education">Education</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="flex justify-center mb-8">
+              <button 
+                className="px-6 py-3 rounded-full text-white font-medium transition hover:bg-opacity-90"
+                style={{ backgroundColor: '#EDC418', color: '#333' }}
+                onClick={calculateSalary}
+              >
+                Calculate My Worth
+              </button>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-6 text-center">
+              <h4 className="text-lg font-medium mb-3">Your Estimated Salary Range</h4>
+              <p className="text-3xl font-bold mb-4" style={{ color: '#3c78e6' }}>
+                {calculatedSalary.min.toLocaleString()} - {calculatedSalary.max.toLocaleString()} MAD
+              </p>
+              <p className="text-gray-600">
+                Based on your experience, industry, and current market rates in Morocco
+              </p>
+            </div>
+            
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-500">
+                This is an estimate based on current market data. Actual salaries may vary based on location, company size, and specific skills.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
