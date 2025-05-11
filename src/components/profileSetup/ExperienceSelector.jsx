@@ -1,6 +1,21 @@
 // src/components/profile-setup/ExperienceSelector.js
 import React from 'react';
 
+// TODO: Replace with API call to fetch experience levels from backend
+// Example implementation:
+// const [experienceLevels, setExperienceLevels] = useState([]);
+// useEffect(() => {
+//   const fetchExperienceLevels = async () => {
+//     try {
+//       const response = await fetch('/api/experience-levels');
+//       const data = await response.json();
+//       setExperienceLevels(data);
+//     } catch (error) {
+//       console.error('Error fetching experience levels:', error);
+//     }
+//   };
+//   fetchExperienceLevels();
+// }, []);
 const experienceLevels = [
   { id: 'entry', label: '0-2 years', description: 'Entry level positions and junior roles' },
   { id: 'mid', label: '2-4 years', description: 'Mid-level positions with some experience' },
@@ -9,6 +24,12 @@ const experienceLevels = [
 ];
 
 const ExperienceSelector = ({ onSelect, selectedLevel }) => {
+  // TODO: Add error handling for API calls
+  // TODO: Add loading state while fetching data
+  // Example:
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(null);
+
   return (
     <div className="p-6">
       <div className="mb-8">
@@ -18,6 +39,8 @@ const ExperienceSelector = ({ onSelect, selectedLevel }) => {
         </p>
       </div>
 
+      {/* TODO: Add loading spinner when fetching data */}
+      {/* TODO: Add error message display when API calls fail */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {experienceLevels.map((level) => (
           <div
