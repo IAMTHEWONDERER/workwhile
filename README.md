@@ -28,7 +28,6 @@ WorkWhile is an innovative job seeking platform designed to connect talented pro
 
 - React.js
 - Vite
-- [Other technologies used in your project]
 
 ### Contributing
 
