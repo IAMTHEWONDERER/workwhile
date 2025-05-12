@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createBrowserRouter, RouterProvider, Navigate, useLocation } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "../utils/store";
-import { checkAuthState } from "../utils/slices/authSlice";
+import { checkAuthState } from "../slices/authSlice";
 import ProfileSettingsPage from "../pages/ProfileSettingsPage"
 import Homepage from "../pages/Homepage";
 import LoginPage from "../pages/Loginpage";
