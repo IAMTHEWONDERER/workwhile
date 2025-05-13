@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState,useRef } from 'react';
 import { User, Bell, Heart, Menu, X } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
