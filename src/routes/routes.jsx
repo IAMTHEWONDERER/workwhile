@@ -14,6 +14,7 @@ import JobApplicationPage from "../pages/JobApplicationPage";
 import Layout from "../components/common/Layout";
 import CompanyReviewPage from "../pages/CompanyReviewPage";
 import SalaryGuidePage from "../pages/SalaryGuidePage";
+import ProtectedRoute from "./ProtectedRoute";
 
 // ScrollToTop component to reset scroll position on page navigation
 const ScrollToTop = ({ children }) => {
@@ -24,28 +25,7 @@ const ScrollToTop = ({ children }) => {
   }, [location]);
   
   return children;
-};
-
-// ProtectedRoute component - requires authentication
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useSelector((state) => state.auth);
-  const location = useLocation();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    // Save the current location the user was trying to access
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-  }
-
-  return children;
-};
+}
 
 // NewUserRoute component - only for newly registered users who need to complete profile
 const NewUserRoute = ({ children }) => {
