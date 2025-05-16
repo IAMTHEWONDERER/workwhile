@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { loginUser, clearError } from '../slices/authSlice';
+import { loginUser } from '../redux/slices/authActions';
+import { clearError } from '../redux/slices/authSlice';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,8 +26,8 @@ const LoginPage = () => {
   
   useEffect(() => {
     // If user is authenticated, redirect accordingly
-    if (isAuthenticated) {
-      if (user?.needsProfileSetup) {
+    if (isAuthenticated && user) {
+      if (user.needsProfileSetup) {
         navigate('/profile-setup', { replace: true });
       } else {
         navigate(from, { replace: true });
@@ -32,9 +35,29 @@ const LoginPage = () => {
     }
   }, [isAuthenticated, user, navigate, from]);
   
-  const handleSubmit = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+  
+  const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    console.log('Submitting login form with data:', formData);
+    
+    // Create login payload
+    const loginPayload = {
+      email: formData.email,
+      password: formData.password
+    };
+    
+    dispatch(loginUser(loginPayload))
+      .unwrap()
+      .then(response => {
+        console.log('Login successful:', response);
+      })
+      .catch(err => {
+        console.error('Login failed:', err);
+      });
   };
   
   return (
@@ -71,8 +94,8 @@ const LoginPage = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
@@ -89,8 +112,8 @@ const LoginPage = () => {
                   type="password"
                   autoComplete="current-password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
