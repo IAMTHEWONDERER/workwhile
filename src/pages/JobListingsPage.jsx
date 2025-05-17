@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import jobsData from '../data/jobs.json';
+import jobService from '../services/jobService';
 
 export default function JobListingsPage({ showApplications = false }) {
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector(state => state.auth);
   const [userApplications, setUserApplications] = useState([]);
@@ -31,42 +32,38 @@ export default function JobListingsPage({ showApplications = false }) {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    const fetchData = () => {
-      if (showApplications && isAuthenticated) {
-        // Get user applications from localStorage
-        const applications = JSON.parse(localStorage.getItem('userApplications') || '[]');
-        const userApps = applications.filter(app => app.userId === user.id);
-        setUserApplications(userApps);
-        
-        // Filter jobs that user has applied to
-        const appliedJobIds = userApps.map(app => app.jobId);
-        const appliedJobs = jobsData.jobs.filter(job => appliedJobIds.includes(job.id));
-        setJobs(appliedJobs);
-        setFilteredJobs(appliedJobs);
-      } else {
-        // Normal mode: show all active jobs
-        const activeJobs = jobsData.jobs.filter(job => job.status === 'active');
-        setJobs(activeJobs);
-        setFilteredJobs(activeJobs);
-        
-        if (isAuthenticated) {
-          // Get user applications to display "Applied" badge
-          const applications = JSON.parse(localStorage.getItem('userApplications') || '[]');
-          const userApps = applications.filter(app => app.userId === user.id);
-          setUserApplications(userApps);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (showApplications && isAuthenticated) {
+          // Fetch user applications
+          const applications = await jobService.getUserApplications();
+          setUserApplications(applications);
           
-          // Get saved jobs
-          const saved = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-          const userSaved = saved.filter(item => item.userId === user.id);
-          setSavedJobs(userSaved);
+          // Get applied jobs
+          const appliedJobs = await Promise.all(
+            applications.map(app => jobService.getJobById(app.jobId))
+          );
+          setJobs(appliedJobs);
+          setFilteredJobs(appliedJobs);
+        } else {
+          // Fetch all jobs with filters
+          const allJobs = await jobService.getAllJobs(filters);
+          setJobs(allJobs);
+          setFilteredJobs(allJobs);
         }
+      } catch (err) {
+        setError(err.message || 'Failed to fetch jobs. Please try again later.');
+        console.error('Error fetching jobs:', err);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     fetchData();
-  }, [showApplications, isAuthenticated, user]);
+  }, [showApplications, isAuthenticated, filters]);
 
   // Apply filters and search when filters, search term, or jobs change
   useEffect(() => {
@@ -100,10 +97,8 @@ export default function JobListingsPage({ showApplications = false }) {
 
       // Filter by salary range
       if (filters.salary) {
-        // Assuming salary filter values are like "50000-80000"
         const [min, max] = filters.salary.split('-').map(Number);
         result = result.filter(job => {
-          // Extract salary number from string like "$50,000 - $80,000"
           const salaryText = job.salary;
           const salaryNumbers = salaryText.match(/\d+/g);
           if (salaryNumbers && salaryNumbers.length) {
@@ -129,7 +124,7 @@ export default function JobListingsPage({ showApplications = false }) {
   }, [filters, searchTerm, jobs]);
 
   const handleViewJob = (jobId) => {
-    navigate(`/job/${jobId}`);
+    navigate(`/jobs/${jobId}`);
   };
   
   const hasAppliedToJob = (jobId) => {
@@ -140,42 +135,27 @@ export default function JobListingsPage({ showApplications = false }) {
     return savedJobs.some(item => item.jobId === jobId);
   };
 
-  const handleSaveJob = (e, jobId) => {
-    e.stopPropagation(); // Stop click event from bubbling up
+  const handleSaveJob = async (e, jobId) => {
+    e.stopPropagation();
     
     if (!isAuthenticated) {
       navigate('/login', { state: { from: '/jobs' } });
       return;
     }
     
-    const savedJobsArray = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-    
-    const alreadySaved = savedJobsArray.some(
-      item => item.userId === user.id && item.jobId === jobId
-    );
-    
-    if (alreadySaved) {
-      // Remove job from saved
-      const updatedSavedJobs = savedJobsArray.filter(
-        item => !(item.userId === user.id && item.jobId === jobId)
-      );
-      localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
+    try {
+      const isSaved = isJobSaved(jobId);
       
-      // Update state
-      setSavedJobs(prev => prev.filter(item => item.jobId !== jobId));
-    } else {
-      // Add job to saved
-      const newSavedJob = {
-        userId: user.id,
-        jobId: jobId,
-        savedAt: new Date().toISOString()
-      };
-      
-      savedJobsArray.push(newSavedJob);
-      localStorage.setItem('savedJobs', JSON.stringify(savedJobsArray));
-      
-      // Update state
-      setSavedJobs(prev => [...prev, newSavedJob]);
+      if (isSaved) {
+        await jobService.removeSavedJob(jobId);
+        setSavedJobs(prev => prev.filter(item => item.jobId !== jobId));
+      } else {
+        const savedJob = await jobService.saveJob(jobId);
+        setSavedJobs(prev => [...prev, savedJob]);
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to save job. Please try again.');
+      console.error('Error saving job:', err);
     }
   };
 
@@ -231,7 +211,28 @@ export default function JobListingsPage({ showApplications = false }) {
   ];
 
   if (loading) {
-    return <div className="max-w-6xl mx-auto px-4 mt-24 text-center">Loading available positions...</div>;
+    return (
+      <div className="max-w-6xl mx-auto px-4 mt-24 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading available positions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 mt-24 text-center">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

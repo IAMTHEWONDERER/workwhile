@@ -141,40 +141,32 @@ const AppContent = () => {
           element: <JobListingsPage />, // Job listings are publicly accessible
         },
         {
-          path: "job/:id",
+          path: "jobs/:id",
           element: <JobDetailsPage />, // Job details are publicly accessible
         },
         {
-          path: "companies",
-          element: <CompanyReviewPage />, // Company reviews are publicly accessible
-        },
-        {
-          path: "salaries",
-          element: <SalaryGuidePage />, // Salary guides are publicly accessible
-        },
-        {
-          path: "job/:id/apply",
+          path: "jobs/:id/apply",
           element: (
             <ProfileCompletedRoute>
               <JobApplicationPage />
             </ProfileCompletedRoute>
-          ), // Job application requires authentication
+          ), // Job application requires authentication and completed profile
         },
         {
-          path: "job/:id/edit",
-          element: (
-            <ProtectedRoute>
-              <JobDetailsPage isEditing={true} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "job/:id/applications",
+          path: "jobs/:id/applications",
           element: (
             <ProtectedRoute>
               <JobDetailsPage showApplications={true} />
             </ProtectedRoute>
-          ),
+          ), // View applications for a job (employer only)
+        },
+        {
+          path: "applications",
+          element: (
+            <ProtectedRoute>
+              <JobListingsPage showApplications={true} />
+            </ProtectedRoute>
+          ), // View all applications (admin only)
         },
         {
           path: "profile/applications",
@@ -182,7 +174,7 @@ const AppContent = () => {
             <ProtectedRoute>
               <JobListingsPage showApplications={true} />
             </ProtectedRoute>
-          ),
+          ), // View user's applications
         },
         {
           path: "profile",
@@ -191,6 +183,14 @@ const AppContent = () => {
               <ProfileSettingsPage />
             </ProtectedRoute>
           ),
+        },
+        {
+          path: "companies",
+          element: <CompanyReviewPage />, // Company reviews are publicly accessible
+        },
+        {
+          path: "salaries",
+          element: <SalaryGuidePage />, // Salary guides are publicly accessible
         },
         {
           path: "*",
