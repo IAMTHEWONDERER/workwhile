@@ -54,6 +54,12 @@ const LoginPage = () => {
       .unwrap()
       .then(response => {
         console.log('Login successful:', response);
+        // Redirect to the intended page after successful login
+        if (response.user.needsProfileSetup) {
+          navigate('/profile-setup', { replace: true });
+        } else {
+          navigate(from, { replace: true });
+        }
       })
       .catch(err => {
         console.error('Login failed:', err);
