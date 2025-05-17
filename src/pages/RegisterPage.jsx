@@ -77,7 +77,16 @@ const RegisterPage = () => {
       role: 'CANDIDATE' // Always register as candidate
     };
     
-    dispatch(registerUser(userData));
+    dispatch(registerUser(userData)).unwrap().then(response => {
+      console.log('Registration successful:', response);
+      // Redirect to login page or dashboard
+      navigate('/login', { replace: true });
+    }).catch(err => {
+      console.error('Registration failed:', err);
+      // Set form error message
+      setFormError(err.message || 'Registration failed');
+    }
+    )
   };
   
   return (
