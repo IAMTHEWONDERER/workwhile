@@ -8,16 +8,22 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
+      console.log('Dispatching registerUser with data:', userData);
       const response = await authService.register(userData);
       
-      // Store token and user info in localStorage for persistence
       if (response.token) {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('user', JSON.stringify({
+          id: response.userId,
+          role: response.role,
+          email: userData.email,
+          name: `${userData.firstName} ${userData.lastName}`
+        }));
       }
       
       return response;
     } catch (error) {
+      console.error('Register error:', error);
       return rejectWithValue(error.message || 'Registration failed');
     }
   }
@@ -30,16 +36,22 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
+      console.log('Dispatching loginUser with:', credentials);
       const response = await authService.login(credentials);
       
       // Store token and user info in localStorage for persistence
       if (response.token) {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('user', JSON.stringify({
+          id: response.userId,
+          role: response.role,
+          email: credentials.email
+        }));
       }
       
       return response;
     } catch (error) {
+      console.error('Login error:', error);
       return rejectWithValue(error.message || 'Login failed');
     }
   }
@@ -84,9 +96,6 @@ export const checkAuthState = createAsyncThunk(
       }
       
       const user = JSON.parse(userStr);
-      
-      // Optionally validate the token with the server
-      // const profile = await authService.getUserProfile();
       
       return { user, token };
     } catch (error) {
