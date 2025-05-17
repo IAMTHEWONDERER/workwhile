@@ -1,90 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import jobsData from '../data/jobs.json';
+import jobService from '../services/jobService';
 
 const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasApplied, setHasApplied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [error, setError] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector(state => state.auth);
 
   useEffect(() => {
-    const fetchJob = () => {
-      const foundJob = jobsData.jobs.find(job => job.id === parseInt(id));
-      setJob(foundJob);
-      setLoading(false);
+    const fetchJob = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const jobData = await jobService.getJobById(id);
+        setJob(jobData);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch job details');
+        console.error('Error fetching job:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchJob();
   }, [id]);
 
   useEffect(() => {
-    // Check if user has already applied to this job
-    if (isAuthenticated && job && user) {
-      const userApplications = JSON.parse(localStorage.getItem('userApplications') || '[]');
-      const applied = userApplications.some(app => 
-        app.userId === user.id && app.jobId === parseInt(id)
-      );
-      setHasApplied(applied);
-      
-      // Check if job is saved
-      const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
-      const saved = savedJobs.some(savedJob => 
-        savedJob.jobId === parseInt(id) && savedJob.userId === user.id
-      );
-      setIsSaved(saved);
-    }
+    const checkJobStatus = async () => {
+      if (isAuthenticated && job && user) {
+        try {
+          // Check if user has already applied to this job
+          const applications = await jobService.getUserApplications();
+          const applied = applications.some(app => app.jobId === parseInt(id));
+          setHasApplied(applied);
+          
+          // Check if job is saved
+          const savedJobs = await jobService.getSavedJobs();
+          const saved = savedJobs.some(savedJob => savedJob.jobId === parseInt(id));
+          setIsSaved(saved);
+        } catch (err) {
+          console.error('Error checking job status:', err);
+        }
+      }
+    };
+
+    checkJobStatus();
   }, [isAuthenticated, id, job, user]);
 
   const handleApply = () => {
     if (!isAuthenticated) {
-      // Save the exact application path the user wanted to access
-      navigate('/login', { state: { from: `/job/${id}/apply` } });
+      navigate('/login', { state: { from: `/jobs/${id}/apply` } });
       return;
     }
     
-    // Check if user has completed profile setup
     if (user?.needsProfileSetup) {
       navigate('/profile-setup');
       return;
     }
     
     if (hasApplied) {
-      return; // User has already applied
-    }
-    
-    navigate(`/job/${id}/apply`);
-  };
-
-  const handleSaveJob = () => {
-    if (!isAuthenticated) {
-      // Save current job page as the return destination
-      navigate('/login', { state: { from: `/job/${id}` } });
       return;
     }
     
-    const savedJobs = JSON.parse(localStorage.getItem('savedJobs') || '[]');
+    navigate(`/jobs/${id}/apply`);
+  };
+
+  const handleSaveJob = async () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: `/jobs/${id}` } });
+      return;
+    }
     
-    if (isSaved) {
-      // Remove job from saved jobs
-      const updatedSavedJobs = savedJobs.filter(item => 
-        !(item.jobId === parseInt(id) && item.userId === user.id)
-      );
-      localStorage.setItem('savedJobs', JSON.stringify(updatedSavedJobs));
-      setIsSaved(false);
-    } else {
-      // Add job to saved jobs
-      savedJobs.push({
-        userId: user.id,
-        jobId: parseInt(id),
-        savedAt: new Date().toISOString()
-      });
-      localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
-      setIsSaved(true);
+    try {
+      if (isSaved) {
+        await jobService.removeSavedJob(id);
+        setIsSaved(false);
+      } else {
+        await jobService.saveJob(id);
+        setIsSaved(true);
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to save job');
+      console.error('Error saving job:', err);
     }
   };
 
@@ -94,11 +97,9 @@ const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
 
   // Handle the case when we're in editing mode (protected route)
   if (isEditing) {
-    // Add your editing UI here
     return (
       <div className="max-w-4xl mx-auto px-4 mt-24 mb-16">
         <h1 className="text-2xl font-bold mb-4">Edit Job Listing</h1>
-        {/* Job editing form would go here */}
         <p className="text-gray-600">Job editing functionality to be implemented</p>
       </div>
     );
@@ -109,7 +110,6 @@ const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
     return (
       <div className="max-w-4xl mx-auto px-4 mt-24 mb-16">
         <h1 className="text-2xl font-bold mb-4">Applications for this Job</h1>
-        {/* Applications list would go here */}
         <p className="text-gray-600">Applications list to be implemented</p>
       </div>
     );
@@ -123,6 +123,22 @@ const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
           <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto mb-8"></div>
           <div className="h-32 bg-gray-200 rounded mb-6"></div>
           <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 mt-24 text-center">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={handleBackToJobs}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Back to Jobs
+          </button>
         </div>
       </div>
     );
@@ -199,12 +215,14 @@ const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
               </svg>
               Posted on {formattedDate}
             </div>
-            <div className="flex items-center ml-4">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-              </svg>
-              {job.applications} applications
-            </div>
+            {job.applications && (
+              <div className="flex items-center ml-4">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                {job.applications} applications
+              </div>
+            )}
           </div>
         </div>
 
@@ -216,23 +234,31 @@ const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
             </p>
           </section>
 
-          <section className="mb-8">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Requirements</h3>
-            <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              {job.requirements && job.requirements.map((req, index) => (
-                <li key={index} className="leading-relaxed">{req}</li>
-              ))}
-            </ul>
-          </section>
+          {job.requirements && job.requirements.length > 0 && (
+            <section className="mb-8">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Requirements</h3>
+              <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                {job.requirements.map((req, index) => (
+                  <li key={index} className="leading-relaxed">
+                    {typeof req === 'object' ? req.name : req}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-          <section className="mb-8">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Benefits</h3>
-            <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              {job.benefits && job.benefits.map((benefit, index) => (
-                <li key={index} className="leading-relaxed">{benefit}</li>
-              ))}
-            </ul>
-          </section>
+          {job.benefits && job.benefits.length > 0 && (
+            <section className="mb-8">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Benefits</h3>
+              <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                {job.benefits.map((benefit, index) => (
+                  <li key={index} className="leading-relaxed">
+                    {typeof benefit === 'object' ? benefit.name : benefit}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-4 mt-8">
             <button

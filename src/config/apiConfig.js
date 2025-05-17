@@ -21,8 +21,8 @@ const createApiClient = (baseURL) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    // Ensure cookies are sent with requests if needed
-    withCredentials: true
+    // Only enable credentials for auth-related endpoints
+    withCredentials: baseURL.includes('/auth') || baseURL.includes('/users')
   });
 
   // Add a request interceptor to add auth token to every request
@@ -88,10 +88,16 @@ const handleApiError = (error) => {
   } else if (error.request) {
     // The request was made but no response was received
     console.error('Request made but no response received:', error.request);
+    if (error.message.includes('CORS')) {
+      return new Error('CORS error: Unable to access the API. Please ensure the backend server is running and CORS is properly configured.');
+    }
     return new Error('No response received from server. Please check your connection.');
   } else {
     // Something happened in setting up the request that triggered an Error
     console.error('Error during request setup:', error.message);
+    if (error.message.includes('CORS')) {
+      return new Error('CORS error: Unable to access the API. Please ensure the backend server is running and CORS is properly configured.');
+    }
     return new Error('Failed to make request. Please try again later.');
   }
 };
