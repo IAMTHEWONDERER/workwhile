@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Save, User, Lock, Briefcase, Bell, LogOut } from 'lucide-react';
-import { logoutUser } from '../utils/slices/authSlice';
+import { logoutUser } from '../slices/authSlice';
 
 const ProfileSettingsPage = () => {
   const { user, loading } = useSelector(state => state.auth);

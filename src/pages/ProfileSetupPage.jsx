@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { completeProfileSetup } from '../utils/slices/authSlice';
+import { completeProfileSetup } from '../slices/authSlice';
 import ExperienceSelector from '../components/profileSetup/ExperienceSelector';
 import SkillsSelector from '../components/profileSetup/SkillsSelector';
 import JobTitleSelector from '../components/profileSetup/JobTitleSelector';

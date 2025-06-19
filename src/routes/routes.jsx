@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { createBrowserRouter, RouterProvider, Navigate, useLocation } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import store from "../utils/store";
-import { checkAuthState } from "../utils/slices/authSlice";
+import store from "../redux/store";
+import { checkAuthState } from "../slices/authSlice";
 import ProfileSettingsPage from "../pages/ProfileSettingsPage"
 import Homepage from "../pages/Homepage";
 import LoginPage from "../pages/Loginpage";
@@ -14,6 +14,7 @@ import JobApplicationPage from "../pages/JobApplicationPage";
 import Layout from "../components/common/Layout";
 import CompanyReviewPage from "../pages/CompanyReviewPage";
 import SalaryGuidePage from "../pages/SalaryGuidePage";
+import ProtectedRoute from "./ProtectedRoute";
 
 // ScrollToTop component to reset scroll position on page navigation
 const ScrollToTop = ({ children }) => {
@@ -24,28 +25,7 @@ const ScrollToTop = ({ children }) => {
   }, [location]);
   
   return children;
-};
-
-// ProtectedRoute component - requires authentication
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useSelector((state) => state.auth);
-  const location = useLocation();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    // Save the current location the user was trying to access
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-  }
-
-  return children;
-};
+}
 
 // NewUserRoute component - only for newly registered users who need to complete profile
 const NewUserRoute = ({ children }) => {
@@ -141,40 +121,32 @@ const AppContent = () => {
           element: <JobListingsPage />, // Job listings are publicly accessible
         },
         {
-          path: "job/:id",
+          path: "jobs/:id",
           element: <JobDetailsPage />, // Job details are publicly accessible
         },
         {
-          path: "companies",
-          element: <CompanyReviewPage />, // Company reviews are publicly accessible
-        },
-        {
-          path: "salaries",
-          element: <SalaryGuidePage />, // Salary guides are publicly accessible
-        },
-        {
-          path: "job/:id/apply",
+          path: "jobs/:id/apply",
           element: (
             <ProfileCompletedRoute>
               <JobApplicationPage />
             </ProfileCompletedRoute>
-          ), // Job application requires authentication
+          ), // Job application requires authentication and completed profile
         },
         {
-          path: "job/:id/edit",
-          element: (
-            <ProtectedRoute>
-              <JobDetailsPage isEditing={true} />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "job/:id/applications",
+          path: "jobs/:id/applications",
           element: (
             <ProtectedRoute>
               <JobDetailsPage showApplications={true} />
             </ProtectedRoute>
-          ),
+          ), // View applications for a job (employer only)
+        },
+        {
+          path: "applications",
+          element: (
+            <ProtectedRoute>
+              <JobListingsPage showApplications={true} />
+            </ProtectedRoute>
+          ), // View all applications (admin only)
         },
         {
           path: "profile/applications",
@@ -182,7 +154,7 @@ const AppContent = () => {
             <ProtectedRoute>
               <JobListingsPage showApplications={true} />
             </ProtectedRoute>
-          ),
+          ), // View user's applications
         },
         {
           path: "profile",
@@ -191,6 +163,14 @@ const AppContent = () => {
               <ProfileSettingsPage />
             </ProtectedRoute>
           ),
+        },
+        {
+          path: "companies",
+          element: <CompanyReviewPage />, // Company reviews are publicly accessible
+        },
+        {
+          path: "salaries",
+          element: <SalaryGuidePage />, // Salary guides are publicly accessible
         },
         {
           path: "*",

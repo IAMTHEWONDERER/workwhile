@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { registerUser, clearError } from '../utils/slices/authSlice';
+import { registerUser } from '../redux/slices/authActions';
+import { clearError } from '../redux/slices/authSlice';
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    name: '',
+    username: '',
+  });
   const [formError, setFormError] = useState('');
   
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   
   const { user, isAuthenticated, loading, error } = useSelector(state => state.auth);
+  
+  // Get redirect path from location state or default to jobs page
+  const from = location.state?.from || '/jobs';
   
   useEffect(() => {
     // Clear any existing errors when component mounts
@@ -22,23 +29,28 @@ const RegisterPage = () => {
   }, [dispatch]);
   
   useEffect(() => {
-    // If user is authenticated, check if profile setup is needed
+    // If user is authenticated, redirect accordingly
     if (isAuthenticated && user) {
       if (user.needsProfileSetup) {
         navigate('/profile-setup', { replace: true });
       } else {
-        navigate('/jobs', { replace: true });
+        navigate(from, { replace: true });
       }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, from]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
   
   const validateForm = () => {
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setFormError('Passwords do not match');
       return false;
     }
     
-    if (password.length < 6) {
+    if (formData.password.length < 6) {
       setFormError('Password must be at least 6 characters long');
       return false;
     }
@@ -55,13 +67,26 @@ const RegisterPage = () => {
       return;
     }
     
-    dispatch(registerUser({ 
-      email, 
-      password, 
-      name, 
-      username: username || email.split('@')[0],
-      role: 'jobseeker' // Always register as jobseeker
-    }));
+    // Create registration data object for API
+    const userData = {
+      email: formData.email,
+      password: formData.password,
+      firstName: formData.name.split(' ')[0],
+      lastName: formData.name.split(' ').slice(1).join(' '),
+      username: formData.username || formData.email.split('@')[0],
+      role: 'CANDIDATE' // Always register as candidate
+    };
+    
+    dispatch(registerUser(userData)).unwrap().then(response => {
+      console.log('Registration successful:', response);
+      // Redirect to login page or dashboard
+      navigate('/login', { replace: true });
+    }).catch(err => {
+      console.error('Registration failed:', err);
+      // Set form error message
+      setFormError(err.message || 'Registration failed');
+    }
+    )
   };
   
   return (
@@ -98,8 +123,8 @@ const RegisterPage = () => {
                   type="text"
                   autoComplete="name"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={formData.name}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
@@ -115,8 +140,8 @@ const RegisterPage = () => {
                   name="username"
                   type="text"
                   autoComplete="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={formData.username}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
@@ -136,8 +161,8 @@ const RegisterPage = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
@@ -154,8 +179,8 @@ const RegisterPage = () => {
                   type="password"
                   autoComplete="new-password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
@@ -172,8 +197,8 @@ const RegisterPage = () => {
                   type="password"
                   autoComplete="new-password"
                   required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>

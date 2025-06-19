@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState,useRef } from 'react';
 import { User, Bell, Heart, Menu, X } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../../utils/slices/authSlice';
+import { logoutUser } from '../../slices/authSlice';
 import logo from '../../assets/imgs/workwhile.png'; // Adjust the path as necessary
 
 export default function Navbar() {
