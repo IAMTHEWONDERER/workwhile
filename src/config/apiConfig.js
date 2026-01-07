@@ -1,106 +1,75 @@
-// src/api/apiConfig.js
+// src/config/apiConfig.js
 import axios from 'axios';
 
-// Base URLs for the different services
-const API_URLS = {
-  AUTH: 'http://localhost:8081/api/v1/auth',
-  USERS: 'http://localhost:8081/api/v1/users',
-  CANDIDATES: 'http://localhost:8082/api/v1/candidates',
-  JOBS: 'http://localhost:8083/api/v1/jobs',
-  APPLICATIONS: 'http://localhost:8084/api/v1/applications'
+// API Configuration
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+export const API_URLS = {
+  AUTH: `${API_BASE_URL}/auth`,
+  USERS: `${API_BASE_URL}/users`,
+  JOBS: `${API_BASE_URL}/jobs`,
+  APPLICATIONS: `${API_BASE_URL}/applications`,
+  COMPANIES: `${API_BASE_URL}/companies`
 };
 
-/**
- * Create an axios instance with common configuration for a specific API
- * @param {string} baseURL - The base URL for the API
- * @returns {import('axios').AxiosInstance} - Configured axios instance
- */
-const createApiClient = (baseURL) => {
+// Create API client with interceptors
+export const createApiClient = (baseURL = API_BASE_URL) => {
   const client = axios.create({
     baseURL,
     headers: {
       'Content-Type': 'application/json'
     },
-    // Only enable credentials for auth-related endpoints
-    withCredentials: baseURL.includes('/auth') || baseURL.includes('/users')
+    timeout: 10000
   });
 
-  // Add a request interceptor to add auth token to every request
+  // Request interceptor - Add auth token
   client.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
+      (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
   );
 
-  // Add a response interceptor to handle common errors
+  // Response interceptor - Handle common errors
   client.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    async (error) => {
-      // Get original request
-      const originalRequest = error.config;
-      
-      // Handle 401 Unauthorized errors
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-        
-        try {
-          // Here you would implement token refresh logic if applicable
-          // For now, we'll just redirect to login
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
           localStorage.removeItem('token');
-          localStorage.removeItem('currentUser');
+          localStorage.removeItem('user');
           window.location.href = '/login';
-          return Promise.reject(error);
-        } catch (refreshError) {
-          return Promise.reject(refreshError);
         }
+        return Promise.reject(error);
       }
-      
-      // Handle other errors
-      return Promise.reject(handleApiError(error));
-    }
   );
 
   return client;
 };
 
-/**
- * Helper function to standardize error handling across services
- * @param {Error} error - The error object from axios
- * @returns {Error} - Standardized error object
- */
-const handleApiError = (error) => {
+// Default API client
+export const apiClient = createApiClient();
+
+// Error handler utility
+export const handleApiError = (error) => {
   if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
-    const errorMessage = error.response.data.message || 
-                         error.response.data.error || 
-                         'An error occurred during the request';
-    return new Error(errorMessage);
+    return {
+      message: error.response.data?.message || 'An error occurred',
+      status: error.response.status,
+      data: error.response.data
+    };
   } else if (error.request) {
-    // The request was made but no response was received
-    console.error('Request made but no response received:', error.request);
-    if (error.message.includes('CORS')) {
-      return new Error('CORS error: Unable to access the API. Please ensure the backend server is running and CORS is properly configured.');
-    }
-    return new Error('No response received from server. Please check your connection.');
+    return {
+      message: 'Network error - please check your connection',
+      status: 0
+    };
   } else {
-    // Something happened in setting up the request that triggered an Error
-    console.error('Error during request setup:', error.message);
-    if (error.message.includes('CORS')) {
-      return new Error('CORS error: Unable to access the API. Please ensure the backend server is running and CORS is properly configured.');
-    }
-    return new Error('Failed to make request. Please try again later.');
+    return {
+      message: error.message || 'An unexpected error occurred',
+      status: 0
+    };
   }
 };
-
-// Export the API URLs and client creation function
-export { API_URLS, createApiClient, handleApiError };

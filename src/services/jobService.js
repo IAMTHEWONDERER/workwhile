@@ -1,64 +1,93 @@
-import { API_URLS, createApiClient, handleApiError } from '../config/apiConfig';
+// src/api/jobService.js
+import { createApiClient, handleApiError } from '../config/apiConfig';
+import { BACKEND_ROUTES, buildApiUrl } from '../config/routesConfig';
 
-const jobsClient = createApiClient(API_URLS.JOBS);
-const applicationsClient = createApiClient(API_URLS.APPLICATIONS);
+const jobClient = createApiClient();
 
 const jobService = {
-  // Get all jobs with optional filters
+  /**
+   * Get all jobs with optional filters
+   */
   getAllJobs: async (filters = {}) => {
     try {
-      const response = await jobsClient.get('');
-      return response.data;
+      const params = new URLSearchParams();
+
+      // Add filters to query params
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== undefined && filters[key] !== '') {
+          params.append(key, filters[key]);
+        }
+      });
+
+      const url = buildApiUrl(BACKEND_ROUTES.JOBS.BASE);
+      const response = await jobClient.get(`${url}?${params.toString()}`);
+      return response.data.data;
     } catch (error) {
       throw handleApiError(error);
     }
   },
 
-  // Get job by ID
+  /**
+   * Get job by ID
+   */
   getJobById: async (id) => {
     try {
-      const response = await jobsClient.get(`/${id}`);
+      const url = buildApiUrl(BACKEND_ROUTES.JOBS.JOB_BY_ID(id));
+      const response = await jobClient.get(url);
+      return response.data.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  /**
+   * Create new job (employer only)
+   */
+  createJob: async (jobData) => {
+    try {
+      const url = buildApiUrl(BACKEND_ROUTES.JOBS.BASE);
+      const response = await jobClient.post(url, jobData);
+      return response.data.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  /**
+   * Update job (employer only)
+   */
+  updateJob: async (id, jobData) => {
+    try {
+      const url = buildApiUrl(BACKEND_ROUTES.JOBS.JOB_BY_ID(id));
+      const response = await jobClient.put(url, jobData);
+      return response.data.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  /**
+   * Delete job (employer only)
+   */
+  deleteJob: async (id) => {
+    try {
+      const url = buildApiUrl(BACKEND_ROUTES.JOBS.JOB_BY_ID(id));
+      const response = await jobClient.delete(url);
       return response.data;
     } catch (error) {
       throw handleApiError(error);
     }
   },
 
-  // Save job
-  saveJob: async (jobId) => {
+  /**
+   * Get my jobs (employer only)
+   */
+  getMyJobs: async (params = {}) => {
     try {
-      const response = await jobsClient.post(`/${jobId}/save`);
-      return response.data;
-    } catch (error) {
-      throw handleApiError(error);
-    }
-  },
-
-  // Remove saved job
-  removeSavedJob: async (jobId) => {
-    try {
-      const response = await jobsClient.delete(`/${jobId}/save`);
-      return response.data;
-    } catch (error) {
-      throw handleApiError(error);
-    }
-  },
-
-  // Get user's saved jobs
-  getSavedJobs: async () => {
-    try {
-      const response = await jobsClient.get('/saved');
-      return response.data;
-    } catch (error) {
-      throw handleApiError(error);
-    }
-  },
-
-  // Get user's applications
-  getUserApplications: async () => {
-    try {
-      const response = await applicationsClient.get('/my-applications');
-      return response.data;
+      const queryParams = new URLSearchParams(params);
+      const url = buildApiUrl(BACKEND_ROUTES.JOBS.MY_JOBS);
+      const response = await jobClient.get(`${url}?${queryParams.toString()}`);
+      return response.data.data;
     } catch (error) {
       throw handleApiError(error);
     }

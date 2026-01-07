@@ -2,10 +2,10 @@ import apiClient from './apiClient';
 
 // Define API endpoints for auth
 const AUTH_ENDPOINTS = {
-  REGISTER: '/v1/auth/register',
-  LOGIN: '/v1/auth/login',
-  LOGOUT: '/v1/auth/logout',
-  USER_PROFILE: '/v1/users/profile'
+  REGISTER: '/auth/register',
+  LOGIN: '/auth/login',
+  LOGOUT: '/auth/logout',
+  USER_PROFILE: '/users/profile'
 };
 
 // Auth service with all auth-related API calls

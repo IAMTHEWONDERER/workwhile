@@ -1,8 +1,9 @@
+// src/routes/routes.jsx
 import React, { useEffect } from "react";
 import { createBrowserRouter, RouterProvider, Navigate, useLocation } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "../redux/store";
-import { checkAuthState } from "../slices/authSlice";
+import { checkAuthState } from "../redux/slices/authActions";
 import ProfileSettingsPage from "../pages/ProfileSettingsPage"
 import Homepage from "../pages/Homepage";
 import LoginPage from "../pages/Loginpage";
@@ -19,11 +20,11 @@ import ProtectedRoute from "./ProtectedRoute";
 // ScrollToTop component to reset scroll position on page navigation
 const ScrollToTop = ({ children }) => {
   const location = useLocation();
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
-  
+
   return children;
 }
 
@@ -33,9 +34,9 @@ const NewUserRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+        <div className="min-h-screen flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
     );
   }
 
@@ -45,7 +46,7 @@ const NewUserRoute = ({ children }) => {
 
   // Check if the user has just registered (needs to complete profile)
   const needsProfileSetup = user?.needsProfileSetup === true;
-  
+
   if (!needsProfileSetup) {
     return <Navigate to="/jobs" replace />;
   }
@@ -60,9 +61,9 @@ const ProfileCompletedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+        <div className="min-h-screen flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
     );
   }
 
@@ -91,9 +92,9 @@ const AppContent = () => {
     {
       path: "/",
       element: (
-        <ScrollToTop>
-          <Layout />
-        </ScrollToTop>
+          <ScrollToTop>
+            <Layout />
+          </ScrollToTop>
       ),
       children: [
         {
@@ -111,9 +112,9 @@ const AppContent = () => {
         {
           path: "profile-setup",
           element: (
-            <NewUserRoute>
-              <ProfileSetupPage />
-            </NewUserRoute>
+              <NewUserRoute>
+                <ProfileSetupPage />
+              </NewUserRoute>
           ),
         },
         {
@@ -127,41 +128,41 @@ const AppContent = () => {
         {
           path: "jobs/:id/apply",
           element: (
-            <ProfileCompletedRoute>
-              <JobApplicationPage />
-            </ProfileCompletedRoute>
+              <ProfileCompletedRoute>
+                <JobApplicationPage />
+              </ProfileCompletedRoute>
           ), // Job application requires authentication and completed profile
         },
         {
           path: "jobs/:id/applications",
           element: (
-            <ProtectedRoute>
-              <JobDetailsPage showApplications={true} />
-            </ProtectedRoute>
+              <ProtectedRoute>
+                <JobDetailsPage showApplications={true} />
+              </ProtectedRoute>
           ), // View applications for a job (employer only)
         },
         {
           path: "applications",
           element: (
-            <ProtectedRoute>
-              <JobListingsPage showApplications={true} />
-            </ProtectedRoute>
+              <ProtectedRoute>
+                <JobListingsPage showApplications={true} />
+              </ProtectedRoute>
           ), // View all applications (admin only)
         },
         {
           path: "profile/applications",
           element: (
-            <ProtectedRoute>
-              <JobListingsPage showApplications={true} />
-            </ProtectedRoute>
+              <ProtectedRoute>
+                <JobListingsPage showApplications={true} />
+              </ProtectedRoute>
           ), // View user's applications
         },
         {
           path: "profile",
           element: (
-            <ProtectedRoute>
-              <ProfileSettingsPage />
-            </ProtectedRoute>
+              <ProtectedRoute>
+                <ProfileSettingsPage />
+              </ProtectedRoute>
           ),
         },
         {
@@ -175,18 +176,18 @@ const AppContent = () => {
         {
           path: "*",
           element: (
-            <div className="min-h-screen flex justify-center items-center">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold text-gray-800">404</h1>
-                <p className="text-xl text-gray-600">Page not found</p>
-                <button 
-                  onClick={() => window.history.back()}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Go Back
-                </button>
+              <div className="min-h-screen flex justify-center items-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-800">404</h1>
+                  <p className="text-xl text-gray-600">Page not found</p>
+                  <button
+                      onClick={() => window.history.back()}
+                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Go Back
+                  </button>
+                </div>
               </div>
-            </div>
           ),
         },
       ],
@@ -199,9 +200,9 @@ const AppContent = () => {
 // Final AppRouter with Redux Provider
 const AppRouter = () => {
   return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
+      <Provider store={store}>
+        <AppContent />
+      </Provider>
   );
 };
 

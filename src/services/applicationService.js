@@ -1,88 +1,122 @@
-import { API_URLS, createApiClient } from '../config/apiConfig';
-
-const applicationClient = createApiClient(API_URLS.APPLICATIONS);
+// src/services/applicationService.js
+import apiClient, { API_ENDPOINTS, handleApiError } from '../config/apiConfig';
 
 const applicationService = {
   /**
-   * Get all applications with pagination
-   * @param {number} page - Page number (default: 0)
-   * @param {number} size - Number of records per page (default: 10)
-   * @returns {Promise<Object>} Paginated list of applications
-   */
-  getAllApplications: async (page = 0, size = 10) => {
-    const response = await applicationClient.get('', {
-      params: { page, size }
-    });
-    return response.data;
-  },
-
-  /**
-   * Get a specific application by ID
-   * @param {string} id - The application ID
-   * @returns {Promise<Object>} The application details
-   */
-  getApplicationById: async (id) => {
-    const response = await applicationClient.get(`/${id}`);
-    return response.data;
-  },
-
-  /**
-   * Get all applications for a specific user
-   * @param {string} userId - The user ID
-   * @returns {Promise<Array>} List of user's applications
-   */
-  getUserApplications: async (userId) => {
-    const response = await applicationClient.get(`/user/${userId}`);
-    return response.data;
-  },
-
-  /**
-   * Get all applications for a specific job
-   * @param {string} jobId - The job ID
-   * @returns {Promise<Array>} List of applications for the job
-   */
-  getJobApplications: async (jobId) => {
-    const response = await applicationClient.get(`/job/${jobId}`);
-    return response.data;
-  },
-
-  /**
-   * Check if a user has applied to a job
-   * @param {string} userId - The user ID
-   * @param {string} jobId - The job ID
-   * @returns {Promise<boolean>} Whether the user has applied
-   */
-  hasUserAppliedToJob: async (userId, jobId) => {
-    const response = await applicationClient.get('/check', {
-      params: { userId, jobId }
-    });
-    return response.data;
-  },
-
-  /**
    * Create a new job application
-   * @param {FormData} formData - The application data including files
-   * @returns {Promise<Object>} The created application
    */
-  createApplication: async (formData) => {
-    const response = await applicationClient.post('', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
+  createApplication: async (applicationData) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.APPLICATIONS.BASE, applicationData);
+      return response.data.data;
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      throw new Error(errorInfo.message);
+    }
   },
 
   /**
-   * Update the status of an application
-   * @param {string} id - The application ID
-   * @param {string} status - The new status
-   * @returns {Promise<Object>} The updated application
+   * Get my applications (candidate)
    */
-  updateApplicationStatus: async (id, status) => {
-    const response = await applicationClient.patch(`/${id}/status`, { status });
-    return response.data;
+  getMyApplications: async (filters = {}) => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.APPLICATIONS.MY_APPLICATIONS, {
+        params: filters
+      });
+      return response.data.data;
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      throw new Error(errorInfo.message);
+    }
+  },
+
+  /**
+   * Get applications for a specific job (employer)
+   */
+  getJobApplications: async (jobId, filters = {}) => {
+    try {
+      const response = await apiClient.get(
+          API_ENDPOINTS.APPLICATIONS.JOB_APPLICATIONS(jobId),
+          { params: filters }
+      );
+      return response.data.data;
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      throw new Error(errorInfo.message);
+    }
+  },
+
+  /**
+   * Update application status (employer)
+   */
+  updateApplicationStatus: async (applicationId, status, notes = '') => {
+    try {
+      const response = await apiClient.put(
+          API_ENDPOINTS.APPLICATIONS.UPDATE_STATUS(applicationId),
+          { status, notes }
+      );
+      return response.data.data;
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      throw new Error(errorInfo.message);
+    }
+  },
+
+  /**
+   * Withdraw application (candidate)
+   */
+  withdrawApplication: async (applicationId) => {
+    try {
+      const response = await apiClient.put(API_ENDPOINTS.APPLICATIONS.WITHDRAW(applicationId));
+      return response.data.data;
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      throw new Error(errorInfo.message);
+    }
+  },
+
+  /**
+   * Check if user has applied to a job
+   */
+  hasUserAppliedToJob: async (jobId) => {
+    try {
+      const applications = await this.getMyApplications({ jobId });
+      return applications.applications && applications.applications.length > 0;
+    } catch (error) {
+      console.error('Error checking application status:', error);
+      return false;
+    }
+  },
+
+  /**
+   * Get application statistics (for dashboard)
+   */
+  getApplicationStats: async () => {
+    try {
+      const applications = await this.getMyApplications();
+      const stats = {
+        total: applications.applications?.length || 0,
+        pending: 0,
+        reviewing: 0,
+        shortlisted: 0,
+        interviewed: 0,
+        offered: 0,
+        rejected: 0,
+        withdrawn: 0
+      };
+
+      applications.applications?.forEach(app => {
+        if (Object.prototype.hasOwnProperty.call(stats, app.status)) {
+          stats[app.status]++;
+        }
+      });
+
+      return stats;
+    } catch (error) {
+      const errorInfo = handleApiError(error);
+      throw new Error(errorInfo.message);
+    }
   }
 };
 
-export default applicationService; 
+export default applicationService;
