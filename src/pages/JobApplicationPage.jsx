@@ -9,7 +9,6 @@ const JobApplicationPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [hasApplied, setHasApplied] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -25,25 +24,14 @@ const JobApplicationPage = () => {
   });
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector(state => state.auth);
 
   useEffect(() => {
-    const fetchJobAndCheckApplication = async () => {
+    const fetchJob = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        // Fetch job details
         const jobData = await jobService.getJobById(id);
         setJob(jobData);
-
-        // Check if user has already applied
-        if (isAuthenticated && user) {
-          const hasApplied = await applicationService.hasUserAppliedToJob(user.id, id);
-          if (hasApplied) {
-            navigate('/jobs');
-          }
-        }
       } catch (err) {
         setError(err.message || 'Failed to fetch job details');
         console.error('Error:', err);
@@ -52,8 +40,8 @@ const JobApplicationPage = () => {
       }
     };
 
-    fetchJobAndCheckApplication();
-  }, [id, isAuthenticated, user, navigate]);
+    fetchJob();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -96,11 +84,6 @@ const JobApplicationPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!isAuthenticated || !user) {
-      navigate('/login', { state: { from: `/jobs/${id}/apply` } });
-      return;
-    }
 
     // Validate required fields
     const requiredFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'resume'];
@@ -115,28 +98,29 @@ const JobApplicationPage = () => {
       setSubmitting(true);
       setError(null);
 
-      // Create FormData object for file upload
+      // Create application data with file names
       const applicationData = new FormData();
       applicationData.append('jobId', id);
-      applicationData.append('userId', user.id);
       applicationData.append('firstName', formData.firstName);
       applicationData.append('lastName', formData.lastName);
       applicationData.append('email', formData.email);
       applicationData.append('phoneNumber', formData.phoneNumber);
       applicationData.append('coverLetter', formData.coverLetter);
-      if (formData.resume) {
-        applicationData.append('resume', formData.resume);
-      }
+      applicationData.append('resumeFileName', formData.resume.name);
+      
+      // Add additional file names if any
       formData.additionalFiles.forEach(file => {
-        applicationData.append('additionalFiles', file);
+        applicationData.append('additionalFileNames', file.name);
       });
 
       // Submit application
       const response = await applicationService.createApplication(applicationData);
       
-      if (response.status === 200) {
+      // Show success message and redirect after 2 seconds
+      setError(null);
+      setTimeout(() => {
         navigate('/jobs');
-      }
+      }, 2000);
       
     } catch (err) {
       setError(err.message || 'Failed to submit application');

@@ -65,12 +65,33 @@ const applicationService = {
    * @returns {Promise<Object>} The created application
    */
   createApplication: async (formData) => {
-    const response = await applicationClient.post('', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
+    try {
+      console.log('Submitting application with data:', {
+        jobId: formData.get('jobId'),
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        email: formData.get('email'),
+        phoneNumber: formData.get('phoneNumber'),
+        coverLetter: formData.get('coverLetter'),
+        resumeFileName: formData.get('resumeFileName'),
+        additionalFileNames: formData.getAll('additionalFileNames')
+      });
+
+      const response = await applicationClient.post('', formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Application submitted successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      if (error.code === 'ERR_NETWORK' || error.message.includes('ECONNREFUSED')) {
+        throw new Error('Unable to connect to the server. Please ensure the backend service is running on port 8084.');
+      }
+      throw new Error(error.response?.data?.message || 'Failed to submit application. Please try again.');
+    }
   },
 
   /**

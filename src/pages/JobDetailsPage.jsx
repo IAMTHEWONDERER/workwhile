@@ -54,16 +54,6 @@ const JobDetailsPage = ({ isEditing = false, showApplications = false }) => {
   }, [isAuthenticated, id, job, user]);
 
   const handleApply = () => {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: `/jobs/${id}/apply` } });
-      return;
-    }
-    
-    if (user?.needsProfileSetup) {
-      navigate('/profile-setup');
-      return;
-    }
-    
     if (hasApplied) {
       return;
     }

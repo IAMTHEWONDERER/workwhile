@@ -28,7 +28,7 @@ const LoginPage = () => {
     // If user is authenticated, redirect accordingly
     if (isAuthenticated && user) {
       if (user.needsProfileSetup) {
-        navigate('/profile-setup', { replace: true });
+        navigate('/jobs', { replace: true });
       } else {
         navigate(from, { replace: true });
       }
